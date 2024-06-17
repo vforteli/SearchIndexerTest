@@ -226,5 +226,6 @@ FakesAssemblies/
 _Pvt_Extensions
 .DS_Store
 
-SearchIndexerTest/appsettings.json
+appsettings.json
 .vscode/
+secrets.md
