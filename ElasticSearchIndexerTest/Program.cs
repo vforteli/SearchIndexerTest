@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using AcmeSearch;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Transport;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 var config = new ConfigurationBuilder().AddJsonFile($"appsettings.json", true, true).Build();
 
 const string AcmeIndexName = "acmedocs";
+const string AcmeIndexNameV2 = "acmedocsv2";
 
 const int BatchCount = 1000;
 const int BatchSize = 1000;
@@ -20,11 +22,12 @@ var client = new ElasticsearchClient(settings);
 
 
 
-await UploadDocumentsAsync(client);
+// await UploadDocumentsAsync(client);
 
 
 // await CheckConnectivityAsync();
 
+await CheckDocumentReadAsync(client);
 
 static async Task UploadDocumentsAsync(ElasticsearchClient client)
 {
@@ -91,11 +94,18 @@ static async Task CheckConnectivityAsync(ElasticsearchClient client)
 }
 
 
-public class AcmeDocsIndexModel
+
+static async Task CreateAcmeIndexAsync(ElasticsearchClient client)
 {
-    required public int Id { get; init; }
-    required public string sometextfield { get; init; }
-    required public bool somebooleanfield { get; init; }
-    required public int someintfield { get; init; }
-    required public DateTime somedatefield { get; init; }
+    var request = new Elastic.Clients.Elasticsearch.IndexManagement.CreateIndexRequest(AcmeIndexNameV2)
+    {
+        Settings = new Elastic.Clients.Elasticsearch.IndexManagement.IndexSettings
+        {
+            Analysis = new Elastic.Clients.Elasticsearch.IndexManagement.IndexSettingsAnalysis
+            {
+                Analyzers = new A
+            }
+        }
+    };
+    var result = await client.Indices.CreateAsync(request);
 }
